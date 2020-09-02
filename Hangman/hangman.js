@@ -65,6 +65,7 @@ var drawPerson = function() {
     }
     if(incorrect.length > 3){
         line(200,280,230,320);
+    }
     if(incorrect.length > 4){
         line(200,240,160,230);
     }
@@ -119,16 +120,16 @@ function draw() {
     }
 };
 
-const checkCorrect = function() {
-    for(var i = 0; i < hangman[selection].length; i ++){
-        if(key === hangman[selection][i]) {
-            return true;
-        }
-    }  
-    return false;   
-}
-
 function keyPressed() {
+    const checkCorrect = function() {
+        for(var i = 0; i < hangman[selection].length; i ++){
+            if(key === hangman[selection][i]) {
+                return true;
+            }
+        }  
+        return false;   
+    }
+
     if(checkCorrect() === true){
         correct.push(key);
     }
@@ -136,4 +137,3 @@ function keyPressed() {
         incorrect.push(key);
     }
 };
-}

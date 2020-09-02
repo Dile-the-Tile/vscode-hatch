@@ -2,7 +2,7 @@ function setup() {
     createCanvas(400,400);
 }
 
-var hangman = [['h','a','t','c','h'],
+var hangman = [['c','o','m','p','i','l','e','r'],
                 ['c','o','d','e'],
                 ['j','a','v','a','s','c','r','i','p','t'],
                 ['t','e','c','h'],
@@ -119,16 +119,16 @@ function draw() {
     }
 };
 
-function keyPressed() {
-    const checkCorrect = function() {
-        for(var i = 0; i < hangman[selection].length; i ++){
-            if(key === hangman[selection][i]) {
-                return true;
-            }
-        }  
-        return false;
-    };
+const checkCorrect = function() {
+    for(var i = 0; i < hangman[selection].length; i ++){
+        if(key === hangman[selection][i]) {
+            return true;
+        }
+    }  
+    return false;   
+}
 
+function keyPressed() {
     if(checkCorrect() === true){
         correct.push(key);
     }
@@ -136,3 +136,4 @@ function keyPressed() {
         incorrect.push(key);
     }
 };
+}

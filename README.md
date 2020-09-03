@@ -1,2 +1,2 @@
 # vscode-hatch
-Hangman Project
+Not Just The Hangman Project

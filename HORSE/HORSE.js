@@ -1,5 +1,6 @@
 function setup() {
     createCanvas(400,400);
+    textAlign(CENTER);
 }
 
 var score1 = 0;
@@ -14,7 +15,6 @@ var angle = 0;
 var arrowSpeed = 0.1;
 var settings = true;
 var numOfTurns = 0;
-textAlign(CENTER);
 
 var ball = {
     radius: 10,

@@ -113,7 +113,6 @@ function draw() {
     drawText();
     drawIncorrect();
     drawPerson();
-    gameoverScreen();
     if(checkWin() === true){
         win = true;
         winScreen();
@@ -129,7 +128,7 @@ function keyPressed() {
         }  
         return false;   
     }
-
+    console.log('a')
     if(checkCorrect() === true){
         correct.push(key);
     }

@@ -1,0 +1,278 @@
+var spriteRadius = 16;
+
+var pipeGap = spriteRadius*9;
+var pipeWidth = 40;
+var distBetweenPipes = 400;
+var pipeSpeed = 5;
+
+var gravity = 0.7;
+var jumpVelocity = gravity*-16;
+var velocityY = 0;
+
+var spriteX = width/2;
+var spriteY = height/2;
+
+var score = 0;
+var scores = [];
+var highscore = 0;
+  
+var gameOver = false;
+var menu = false;
+var options = true;
+
+var pipes = [];
+var lastIndex = 2;
+
+var img = [getImage("space/rocketship")];
+img[1] = getImage("cute/EnemyBug");
+img[2] = getImage("starwars/yoda");
+var index = 0;
+
+var pipe = function(x,y) {
+  this.x = x;
+  this.y = y;
+  this.canScore = true;
+};
+
+var drawPipes = function(i) {
+    fill(0,170,0);
+    rect(pipes[i].x,0,pipeWidth,pipes[i].y-pipeGap/2);
+    rect(pipes[i].x,pipes[i].y+pipeGap/2,pipeWidth,height-pipes[i].y+pipeGap/2);
+};
+
+var setPipePosition = function(setX,setY,i) {
+    pipes[i].x = setX;
+    pipes[i].y = setY;
+    pipes[i].canScore = true;
+};
+
+var pipeUpdates = function(i) {
+  pipes[i].x -= pipeSpeed;
+  if(pipes[i].x + pipeWidth < 0){
+      setPipePosition(pipes[lastIndex++].x + distBetweenPipes,random(80,height-80),i);
+      if(lastIndex === 3){
+          lastIndex = 0;
+      }
+  }
+};
+
+var isColliding = function(birdX,birdY,i) {
+    var pipeY = pipes[i].y - pipeGap/2;
+    var pipeX = birdX;
+    if(dist(pipeX,pipeY,birdX,birdY) <= spriteRadius && (pipeX >= pipes[i].x && pipeX <= pipes[i].x + pipeWidth)) {
+        return true;
+    }
+    
+    pipeY = pipes[i].y + pipeGap/2;
+    if(dist(pipeX,pipeY,birdX,birdY) <= spriteRadius && (pipeX >= pipes[i].x && pipeX <= pipes[i].x + pipeWidth)) {
+        return true;
+    }
+    
+    if(birdX >= pipes[i].x && birdX <= pipes[i].x + pipeWidth) {
+        if(birdY <= pipes[i].y - pipeGap /2 || birdY >= pipes[i].y + pipeGap/2) {
+            return true;
+        }    
+    }
+    
+    return false;
+};
+
+var centerText = function(string,y) {
+  textAlign(CENTER);
+  fill(0);
+  text(string,width/2,y+2);
+  fill(255);
+  text(string,width/2,y);
+};
+
+var updateSprite = function() {
+  velocityY += gravity;
+  spriteY += velocityY;
+  translate(spriteX,spriteY);
+  var rotation = constrain(velocityY/jumpVelocity*-45,-45,45);
+  rotate(rotation);
+  image(img[index],-spriteRadius*1.5,-spriteRadius*1.5,spriteRadius*3,spriteRadius*3);
+  rotate(-rotation);
+  translate(-spriteX,-spriteY);
+};
+
+var gameUpdates = function(i) {
+    if(gameOver === false){
+        pipeUpdates(i);
+        if(pipes[i].x < spriteX && pipes[i].canScore === true){
+            pipes[i].canScore = false;
+            score ++;
+        }
+    }
+    
+    drawPipes(i);
+    if(isColliding(spriteX,spriteY,i) === true){
+        gameOver = true;
+    }
+        
+    if(spriteY > height - spriteRadius) {
+        gameOver = true;
+    }
+        
+    if(gameOver){
+        scores.push(score);
+        for(var i = 0; i < scores.length; i ++){
+            if(scores[i] >= highscore){
+                highscore = scores[i];
+            }
+        }
+    }
+};
+
+var drawText = function() {
+  if(menu) {
+    centerText("Flappy Bird",height/2);
+    textSize(20);
+    centerText("Press space to start",height/2+60);
+    centerText("Press O to open up the options", height/2 + 90);
+  } else if(gameOver){
+      centerText("Game Over",height/2);
+      textSize(20);
+      centerText("Score: " + score, height/2+50);
+      centerText("High Score: " + highscore, height/2 + 80);
+  } else if(!gameOver && !options && !menu){
+      centerText(score,50);
+  }
+};
+
+var setupPipes = function() {
+  for(var i = 0; i < 3; i ++){
+      pipes.push(new pipe(700+i*distBetweenPipes,random(80,height-80)));
+  }  
+};
+setupPipes();
+
+var optionsScreen = function() {
+    textSize(25);
+    centerText("Adjust Gravity", 100);
+    centerText("Adjust Speed", 200);
+    centerText("Change Character", 300);
+    fill(180);
+    rect(280,0,120,50);
+    
+    rect(75,110,50,50);
+    rect(177,110,50,50);
+    rect(275,110,50,50);
+    
+    rect(75,210,50,50);
+    rect(177,210,50,50);
+    rect(275,210,50,50);
+    
+    rect(75,310,50,50);
+    rect(177,310,50,50);
+    rect(275,310,50,50);
+    
+    
+    fill(255);
+    textSize(19);
+    text("Back to Menu", 342,35);
+    text("0.5",100,140);
+    text("0.7",200,140);
+    text("0.8",300,140);
+    text("3",102,240);
+    text("5",203,240);
+    text("7",300,240);
+    image(img[0],75,305,50,50);
+    image(img[1],180,300,45,50);
+    image(img[2],277,310,50,50);
+    
+};
+
+var draw = function() {
+  textSize(40);
+  background(0,200,255);
+  if(options){
+      optionsScreen();
+  }
+  if(!menu && !options){
+      for(var i = 0; i < pipes.length; i ++){
+          gameUpdates(i);
+      }
+      updateSprite();
+  }
+  drawText();
+};
+
+var resetGame = function() {
+  gameOver = false;
+  menu = true;   
+  spriteY = height/2-100;
+  score = 0;
+  velocityY = 0;
+  lastIndex = 2;
+  for(var i = 0; i < pipes.length; i ++){
+      setPipePosition(450+i*distBetweenPipes,random(80,height-80),i);
+  }
+};
+
+var mouseClicked = function() {
+    if(!gameOver){
+        velocityY = jumpVelocity;
+    } else if(spriteY > height + spriteRadius) {
+        resetGame();
+        return;
+    }
+    
+    if(menu === true) {
+        menu = false;
+    }
+    
+    if(options){
+        if(mouseX > 280 && mouseY < 50) {
+            options = false;
+            menu = true;
+        }
+        
+        if(mouseY > 110 && mouseY < 160){
+            if(mouseX > 75 && mouseX < 125){
+                gravity = 0.5;
+            }
+            if(mouseX > 177 && mouseX < 227){
+                gravity = 0.7;
+            }
+            if(mouseX > 275 && mouseX < 325){
+                gravity = 0.8;
+            }
+        }
+        
+        if(mouseY > 210 && mouseY < 260){
+            if(mouseX > 75 && mouseX < 125){
+                pipeSpeed = 3;
+            }
+            if(mouseX > 177 && mouseX < 227){
+                pipeSpeed = 5;
+            }
+            if(mouseX > 275 && mouseX < 325){
+                pipeSpeed = 7;
+            }
+        }
+        
+        if(mouseY > 310 && mouseY < 360){
+            if(mouseX > 75 && mouseX < 125){
+                index = 0;
+            }
+            if(mouseX > 177 && mouseX < 227){
+                index = 1;
+            }
+            if(mouseX > 275 && mouseX < 325){
+                index = 2;
+            }
+        }
+    }
+};
+
+var keyPressed = function() {
+  if(keyCode === 32){
+    mouseClicked();
+  }
+  
+  if(key === 'o'){
+      menu = false;
+      options = true;
+  }
+};

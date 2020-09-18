@@ -10,6 +10,10 @@ var res = false;
 var score = 0;
 var tick = 0;
 
+var randint = function(min,max) {
+    return Math.floor(Math.random()*(max-min)+min);
+}
+
 var getEmptyTiles = function() {
     //store the value of each tile
   var coords = [];
@@ -42,9 +46,9 @@ var canMerge = function() {
 
 var addTile = function() {
   var free = getEmptyTiles();
-  var pos = free[Math.floor(random(free.length))];
+  var pos = free[Math.floor(randint(0,free.length))];
   
-  if(random() < 0.75){
+  if(Math.random() < 0.75){
       grid[pos.x][pos.y] = 1;
   } else {
       grid[pos.x][pos.y] = 2;
@@ -56,7 +60,7 @@ var addTile = function() {
 };
 
 //starting tiles
-for(var i = 0; i <= random(2,5); i ++){
+for(var i = 0; i <= Math.floor(randint(2,5)); i ++){
       addTile();
 }
 
@@ -66,7 +70,7 @@ var transpose = function(cc) {
     for(var y = 0; y <= 3; y ++){
         var row = [];
         for(var x = 0; x <= 3; x ++){
-            // cc returns x else return 3 - x
+            //ran cc returns x else return 3 - x
             row.push(grid[cc ? x : 3 - x][cc ? 3 - y : y]);
         }
         tempGrid.push(row);
